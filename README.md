@@ -1,6 +1,6 @@
 # Description
 
-This bundle contains EChart Menu plugin. This plugin generates tabular/charts from datalist. Please refer to the [documentation](https://dev.joget.org/community/display/marketplace/EChart+Userview+Menu+Plugin).
+This bundle contains EChart Menu plugin. This plugin generates charts with dataset from datalist. Please refer to the [documentation](https://dev.joget.org/community/display/marketplace/EChart+Userview+Menu+Plugin).
 
 # Getting Help
 
