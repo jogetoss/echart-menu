@@ -44,8 +44,7 @@
              "name":"theme",
              "label":"@@userview.EChart.theme@@",
              "type":"selectbox",
-             "required":"True",
-            "options":[
+             "options":[
                {
                    "value":"",
                    "label": "Default"
