@@ -1,6 +1,6 @@
 # Description
 
-This repository is meant to serve as a general template for how to set up new repositories in the JogetOSS organization. 
+This bundle contains EChart Menu plugin. This plugin generates tabular/charts from datalist. Please refer to the [documentation](https://dev.joget.org/community/display/marketplace/EChart+Userview+Menu+Plugin).
 
 # Getting Help
 
