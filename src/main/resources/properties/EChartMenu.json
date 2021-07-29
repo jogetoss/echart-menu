@@ -230,6 +230,22 @@
             ]
          },
          {
+            "name":"chartUseAllDataRows",
+            "label":"@@userview.EChart.chartUseAllDataRows@@",
+            "type" : "selectbox",
+            "value" : "",
+            "options" : [
+                {
+                    "value" : "",
+                    "label" : "@@userview.EChart.chartUseAllDataRows.currentPage@@"
+                },
+                {
+                    "value" : "true",
+                    "label" : "@@userview.EChart.chartUseAllDataRows.all@@"
+                }
+            ]
+        },
+        {
             "name":"showTable",
             "label":"@@userview.EChart.showTable@@",
             "type" : "selectbox",

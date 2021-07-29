@@ -209,7 +209,13 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         DataListColumn[] columns;
                 
         try {
-            binderdata = datalist.getRows();
+            
+            if( getPropertyString("chartUseAllDataRows").equalsIgnoreCase("true") ){
+                binderdata = datalist.getRows(datalist.getTotal(), 0);
+            }else{
+                binderdata = datalist.getRows();
+            }
+            
             columns = datalist.getColumns();
         } catch (Exception e) {
             LogUtil.error(SqlChartMenu.class.getName(), e, "Not able to retrieve data from binder");
