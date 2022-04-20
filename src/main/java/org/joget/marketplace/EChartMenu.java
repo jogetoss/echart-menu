@@ -48,7 +48,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         return "EChart Menu";
     }
     public String getVersion() {
-        return "7.0.3 Beta";
+        return "7.0.3";
     }
     
     public String getClassName() {
