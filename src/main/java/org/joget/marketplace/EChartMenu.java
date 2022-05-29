@@ -48,7 +48,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         return "EChart Menu";
     }
     public String getVersion() {
-        return "7.0.3";
+        return "7.0.4";
     }
     
     public String getClassName() {
@@ -276,7 +276,22 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
 
                     JSONArray seriesArray = new JSONArray();
                     int seriesCount = 0;
-
+                    
+                    if(mapping_values.length == 0){
+                        Collection col = new ArrayList();
+                        //treat each column in the dataset as a series other than the column chosen as X-axis
+                        for(DataListColumn c : columns){
+                            if(!c.getName().equalsIgnoreCase(getPropertyString("mapping_x"))){
+                                HashMap m = new HashMap();
+                                m.put("value", c.getName());
+                                m.put("customization", "");
+                                m.put("showValueLabel", "true");
+                                col.add(m);
+                            }
+                        }
+                        mapping_values = col.toArray();
+                    }
+                    
                     //generate series data
                     for (int i = 0; i < mapping_values.length; i++) {
                         Map mapping = (HashMap) mapping_values[i];
@@ -420,8 +435,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                         String seriesName = getColumnLabel(mapping.get("value").toString(), columns);
                         legends.put(seriesName);
                     }
-
-                        setProperty("legends",legends.toString());
+                    setProperty("legends",legends.toString());
 
                     //generate ticks
                     JSONArray ticks = new JSONArray();
@@ -429,7 +443,6 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                         String legendString = getBinderFormattedValue(datalist, r, getPropertyString("mapping_x"));
                         ticks.put(legendString);
                     }
-
                     setProperty("ticks",ticks.toString());
                 }
             } catch (Exception e) {
@@ -445,19 +458,24 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         DataListColumn[] columns = dataList.getColumns();
         for (DataListColumn c : columns) {
             if(c.getName().equalsIgnoreCase(name)){
-                String value = DataListService.evaluateColumnValueFromRow(o, name).toString();
-                Collection<DataListColumnFormat> formats = c.getFormats();
-                if (formats != null) {
-                    for (DataListColumnFormat f : formats) {
-                        if (f != null) {
-                            value = f.format(dataList, c, o, value);
-                            return value;
-                        }else{
-                            return value;
+                String value;
+                try{
+                    value = DataListService.evaluateColumnValueFromRow(o, name).toString();
+                    Collection<DataListColumnFormat> formats = c.getFormats();
+                    if (formats != null) {
+                        for (DataListColumnFormat f : formats) {
+                            if (f != null) {
+                                value = f.format(dataList, c, o, value);
+                                return value;
+                            }else{
+                                return value;
+                            }
                         }
+                    }else{
+                        return value;
                     }
-                }else{
-                    return value;
+                }catch(Exception ex){
+
                 }
             }
         }

@@ -343,7 +343,7 @@
             "control_field":"chartType",
             "control_value":"donut|bar|area|line|custom",
             "control_use_regex":"true",
-            "required":"true",
+            "required":"false",
             "fields":[
                {
                   "name":"value",
