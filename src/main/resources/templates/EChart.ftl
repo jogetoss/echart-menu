@@ -21,19 +21,19 @@
     
     <style type="text/css">
         <#if element.properties.showTable! != "bottom" && element.properties.showTable! != "top">
-        .dataList .table-wrapper, .pagebanner, .pagelinks, .exportlinks{
+        #echart-body-${element.properties.id!} .dataList .table-wrapper, #echart-datalist-${element.properties.id!} .pagebanner, #echart-datalist-${element.properties.id!} .pagelinks, #echart-datalist-${element.properties.id!} .exportlinks{
             display: none !important;
         }
         </#if>
 
         <#if element.properties.showFilter! != "true">
-        .filter_form{
+        #echart-body-${element.properties.id!} .filter_form{
             display: none !important;
         }
         </#if>
 
         <#if element.properties.showExportLinks! != "true">
-        .exportlinks{
+        #echart-body-${element.properties.id!} .exportlinks{
             display: none !important;
         }
         </#if>
@@ -101,17 +101,23 @@
 
         // use configuration item and data specified to show chart
         eChart.setOption(option);
-        
-        $(".echart").detach().appendTo(".dataList");
+        $("#chart-${element.properties.id!}").data("eChart", eChart);
 
-        $(window).on('resize', function(){
-            if(eChart != null && eChart != undefined){
-                eChart.resize();
-            }
-        });
-        
+        $(window).off("resize.chart-${element.properties.id}");
+        $(window).on("resize.chart-${element.properties.id}", function () {
+            if ($("#chart-${element.properties.id!}").data("eChart")) {
+                $("#chart-${element.properties.id!}").css({
+                    width: "100%",
+                    height: "100%"
+            });
+            $("#chart-${element.properties.id!}").data("eChart").resize();
+        } else {
+            $(window).off("resize.chart-${element.properties.id}");
+        }
+    });
+
         <#if element.properties.showTable! == "bottom">
-        $(".table-wrapper").detach().appendTo(".dataList");
+        $("#echart-body-${element.properties.id!} .dataList").detach().appendTo("#echart-body-${element.properties.id!}");
         </#if>
     </script>
     ${element.properties.customChartFooter!}

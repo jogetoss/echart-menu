@@ -31,7 +31,6 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
-import org.joget.plugin.enterprise.SqlChartMenu;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
@@ -48,7 +47,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         return "EChart Menu";
     }
     public String getVersion() {
-        return "7.0.4";
+        return "7.0.5";
     }
     
     public String getClassName() {
@@ -148,7 +147,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         String content = pluginManager.getPluginFreeMarkerTemplate(freeMarkerModel, getClass().getName(), "/templates/EChart.ftl", MESSAGE_PATH);
         
         //combine both
-        return datalistContent + content;
+        return "<div id=echart-body-" + getPropertyString("id") + " class=\"chart-body-content\">" + datalistContent + content + "</div>";
     }
     
     protected String getDatalistHTML(){
@@ -218,7 +217,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
             
             columns = datalist.getColumns();
         } catch (Exception e) {
-            LogUtil.error(SqlChartMenu.class.getName(), e, "Not able to retrieve data from binder");
+            LogUtil.error(EChartMenu.class.getName(), e, "Not able to retrieve data from binder");
             setProperty("error", ResourceBundleUtil.getMessage("userview.sqlchartmenu.error.invalidData"));
             return;
         }
@@ -446,7 +445,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                     setProperty("ticks",ticks.toString());
                 }
             } catch (Exception e) {
-                LogUtil.error(SqlChartMenu.class.getName(), e, "Not able to render chart data");
+                LogUtil.error(EChartMenu.class.getName(), e, "Not able to render chart data");
                 setProperty("error", AppPluginUtil.getMessage("userview.EChart.error.chartRendering", getClassName(), MESSAGE_PATH));
             }
         }else{
@@ -570,7 +569,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                 }
                 
             } catch (Exception e) {
-                LogUtil.error(SqlChartMenu.class.getName(), e, "Webservice getColumns");
+                LogUtil.error(EChartMenu.class.getName(), e, "Webservice getColumns");
             } 
         } else {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
