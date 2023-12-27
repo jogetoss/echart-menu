@@ -96,7 +96,81 @@
             <#if element.properties.optionCustomization! != "">
                 ${element.properties.optionCustomization!},
             </#if>
-            series: ${element.properties.seriesData!}
+            series: ${element.properties.seriesData!}.map(function (seriesItem) {
+                return Object.assign({}, seriesItem, {
+                    label: {
+                        <#if element.properties.enableDataLabels! == "true">
+                            show: true,
+                        <#else>
+                            show: false,
+                        </#if>
+                        position: 'inside',
+                        formatter: function (params) {
+                            // Convert the value to a number
+                            var currencyValue = parseFloat(params.value);
+                            var userCurrencyPrefix = "${element.properties.prefix!}";
+                            var userCurrencyPostfix = "${element.properties.postfix!}";
+                            var formattedValue;
+        
+                            // if us formatting, prefix is not empty and disableDecimal checkbox conditions
+                            <#if element.properties.useThousandSeparator! == "true">
+                                <#if element.properties.style! == 'us' && (element.properties.prefix! != '' || element.properties.postfix! != '')>
+                                    <#if element.properties.disableDecimal! != "true">
+                                        formattedValue = currencyValue.toLocaleString('en-US', {style: 'decimal', minimumFractionDigits: 2});
+                                    <#else>
+                                        formattedValue = currencyValue.toLocaleString('en-US', {style: 'decimal', minimumFractionDigits: 0});
+                                    </#if>
+                                    return userCurrencyPrefix + " " + formattedValue + " " + userCurrencyPostfix; // Format the label with the currency value and thousand separator
+                                </#if>
+        
+                                // if us formatting, prefix is empty and disableDecimal checkbox conditions
+                                <#if element.properties.style! == 'us' && (element.properties.prefix! == '' || element.properties.postfix! == '')>
+                                    <#if element.properties.disableDecimal! != "true">
+                                        formattedValue = currencyValue.toLocaleString('en-US', {style: 'decimal', minimumFractionDigits: 2});
+                                    <#else>
+                                        formattedValue = currencyValue.toLocaleString('en-US', {style: 'decimal', minimumFractionDigits: 0});
+                                    </#if>
+                                    return formattedValue; // Format the label with the currency value and thousand separator
+                                </#if>
+                            <#else>
+                                <#if element.properties.disableDecimal! != "true">
+                                    return userCurrencyPrefix + " " + currencyValue.toFixed(2) + userCurrencyPostfix;
+                                <#else>
+                                    return userCurrencyPrefix + " " + currencyValue + " " + userCurrencyPostfix; // Handle other cases
+                                </#if>
+                            </#if>
+        
+                            // conditions for euro formatting
+                            <#if element.properties.useThousandSeparator! == "true">
+                                <#if element.properties.style! == 'euro' && (element.properties.prefix! != '' || element.properties.postfix! != '')>
+                                    <#if element.properties.disableDecimal! != "true">
+                                        formattedValue = currencyValue.toLocaleString('tr-TR', {style: 'decimal', minimumFractionDigits: 2});
+                                    <#else>
+                                        formattedValue = currencyValue.toLocaleString('tr-TR', {style: 'decimal', minimumFractionDigits: 0});
+                                    </#if>
+                                    return userCurrencyPrefix + " " + formattedValue + " " + userCurrencyPostfix; // Format the label with the currency value and thousand separator
+                                </#if>
+        
+                                // if euro formatting, prefix is empty and disableDecimal checkbox conditions
+                                <#if element.properties.style! == 'euro' && (element.properties.prefix! == '' || element.properties.postfix! == '')>
+                                    <#if element.properties.disableDecimal != "true">
+                                        formattedValue = currencyValue.toLocaleString('tr-TR', {style: 'decimal', minimumFractionDigits: 2});
+                                    <#else>
+                                        formattedValue = currencyValue.toLocaleString('tr-TR', {style: 'decimal', minimumFractionDigits: 0});
+                                    </#if>
+                                    return formattedValue; // Format the label with the currency value and thousand separator
+                                </#if>
+                            <#else>
+                                <#if element.properties.disableDecimal! != "true">
+                                    return userCurrencyPrefix + " " + currencyValue.toFixed(2) + userCurrencyPostfix;
+                                <#else>
+                                    return userCurrencyPrefix + " " + currencyValue + userCurrencyPostfix; // Handle other cases
+                                </#if>
+                            </#if>
+                        }
+                    }
+                });
+            })
         };
 
         // use configuration item and data specified to show chart
