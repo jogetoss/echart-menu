@@ -529,6 +529,87 @@
             "type":"textfield",
             "value":"600px",
             "required":"true"
+         },
+         {
+            "label": "@@userview.EChart.numberFormatting@@",
+            "type": "header"
+         },
+         {
+            "name": "enableDataLabels",
+            "label": "@@userview.EChart.enableDataLabels@@",
+            "type": "checkbox",
+            "options": [
+               {
+                  "value": "true",
+                  "label": ""
+               }
+            ]
+         },
+         {
+            "name": "style",
+            "label": "@@userview.EChart.style@@",
+            "type": "selectbox",
+            "value": "",
+            "options": [
+               {
+                  "value": "",
+                  "label": ""
+               },
+               {
+                  "value": "us",
+                  "label": "@@userview.EChart.style.us@@"
+               },
+               {
+                  "value": "euro",
+                  "label": "@@userview.EChart.style.euro@@"
+               }
+            ],
+            "control_field": "enableDataLabels",  
+            "control_value": "true" 
+         },
+         {
+            "name": "prefix",
+            "label": "@@userview.EChart.prefix@@",
+            "type": "textfield",
+            "control_field": "style",
+            "control_value": "us|euro",
+            "control_use_regex": "true"
+         },
+         {
+            "name": "postfix",
+            "label": "@@userview.EChart.postfix@@",
+            "type": "textfield",
+            "control_field": "style",
+            "control_value": "us|euro",
+            "control_use_regex": "true"
+         },
+         {
+            "name": "disableDecimal",
+            "label": "@@userview.EChart.disableDecimal@@",
+            "type": "checkbox",
+            "options": [
+               {
+                  "value": "true",
+                  "label": ""
+               }
+            ],
+            "control_field": "style",
+            "control_value": "us|euro",
+            "control_use_regex": "true"
+         },
+         {
+            "name": "useThousandSeparator",
+            "label": "@@userview.EChart.useThousandSeparator@@",
+            "type": "checkbox",
+            "options": [
+               {
+                  "value": "true",
+                  "label": ""
+               }
+            ],
+            "control_field": "style",
+            "control_value": "us|euro",
+            "control_use_regex": "true"
          }
       ]
    }, 
