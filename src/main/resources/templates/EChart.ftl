@@ -54,6 +54,38 @@
         var eChart = echarts.init(dom);
         </#if>
 
+        function parseNumberFromString(value) {
+         // Remove currency symbols (e.g., 'RM') and any whitespace from the string
+         value = value.replace(/[^\d.,-]+/g, '').trim();
+
+         var lastCommaIndex = value.lastIndexOf(',');
+         var lastPeriodIndex = value.lastIndexOf('.');
+
+         var numericValue;
+
+         // Determine if the format is US or EU by the position of the last comma or period
+         if (lastCommaIndex > lastPeriodIndex) {
+         // EU format: replace period with nothing (thousands separator) and comma with period (decimal separator)
+         numericValue = value.replace(/\./g, '').replace(/,/g, '.');
+         } else {
+          // US format: remove commas (thousands separator)
+          numericValue = value.replace(/,/g, '');
+            }
+
+         // Now, convert the cleaned string to a float
+         var parsedValue = parseFloat(numericValue);
+
+         // Log an error if parsing failed
+         if (isNaN(parsedValue)) {
+         return NaN;
+            }
+
+          return parsedValue;
+        }
+
+
+
+
         // specify chart configuration item and data
         var option = {
           <#if element.properties.title! != "">
@@ -97,7 +129,10 @@
                 ${element.properties.optionCustomization!},
             </#if>
             series: ${element.properties.seriesData!}.map(function (seriesItem) {
+                var parsedData = seriesItem.data.map(parseNumberFromString);
+
                 return Object.assign({}, seriesItem, {
+                    data: parsedData,
                     label: {
                         <#if element.properties.enableDataLabels! == "true">
                             show: true,
