@@ -54,34 +54,29 @@
         var eChart = echarts.init(dom);
         </#if>
 
-        function parseNumberFromString(value) {
-         // Remove currency symbols (e.g., 'RM') and any whitespace from the string
-         value = value.replace(/[^\d.,-]+/g, '').trim();
+function parseNumberFromString(item) {
+    var value = (typeof item === 'string') ? item : item.value; // Handle both strings and objects
+    if (typeof value !== 'string') {
+        console.log('Non-string value detected, converting to string:', value);
+        value = value.toString();
+    }
+    value = value.replace(/[^\d.,-]+/g, '').trim();
 
-         var lastCommaIndex = value.lastIndexOf(',');
-         var lastPeriodIndex = value.lastIndexOf('.');
+    var lastCommaIndex = value.lastIndexOf(',');
+    var lastPeriodIndex = value.lastIndexOf('.');
 
-         var numericValue;
-
-         // Determine if the format is US or EU by the position of the last comma or period
-         if (lastCommaIndex > lastPeriodIndex) {
-         // EU format: replace period with nothing (thousands separator) and comma with period (decimal separator)
-         numericValue = value.replace(/\./g, '').replace(/,/g, '.');
-         } else {
-          // US format: remove commas (thousands separator)
-          numericValue = value.replace(/,/g, '');
-            }
-
-         // Now, convert the cleaned string to a float
-         var parsedValue = parseFloat(numericValue);
-
-         // Log an error if parsing failed
-         if (isNaN(parsedValue)) {
-         return NaN;
-            }
-
-          return parsedValue;
-        }
+    if (lastCommaIndex > lastPeriodIndex) {
+        value = value.replace(/\./g, '').replace(/,/g, '.');
+    } else {
+        value = value.replace(/,/g, '');
+    }
+    var parsedValue = parseFloat(value);
+    if (isNaN(parsedValue)) {
+        console.error('Failed to parse number from value:', value);
+        return NaN;
+    }
+    return parsedValue;
+}
 
 
 
@@ -141,6 +136,7 @@
                         </#if>
                         position: 'inside',
                         formatter: function (params) {
+
                             // Convert the value to a number
                             var currencyValue = parseFloat(params.value);
                             var userCurrencyPrefix = "${element.properties.prefix!}";
