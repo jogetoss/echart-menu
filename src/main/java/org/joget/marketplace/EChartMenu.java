@@ -136,9 +136,16 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         datalistContent = getDatalistHTML();
         datalistContent = datalistContent.substring(0, datalistContent.length() - 8);
 
-        DataList datalist = getDataList();
-        //generate data for echart
-        getBinderData(datalist);
+         DataList datalist = getDataList();
+        if (datalist != null && datalist.getRows().size() > 0) {
+            getBinderData(datalist);
+        } else {
+            LogUtil.info(getClass().getName(), "Datalist Content: " + datalistContent);
+            return "<div>No data available</div>"; 
+        }
+        if (datalist != null) {
+            getBinderData(datalist);
+        }
 
         String libraryVersion = "";
 
