@@ -1,4 +1,4 @@
-    <script src="${request.contextPath}/plugin/org.joget.marketplace.EChartMenu/lib/echarts-${element.properties.libraryVersion!}/echarts.min.js"></script>
+<script src="${request.contextPath}/plugin/org.joget.marketplace.EChartMenu/lib/echarts-${element.properties.libraryVersion!}/echarts.min.js"></script>
 
     <#if element.properties.theme! != "">
     <script src="${request.contextPath}/plugin/org.joget.marketplace.EChartMenu/lib/echarts-${element.properties.libraryVersion!}/theme/${element.properties.theme!}.js"></script>
@@ -54,34 +54,7 @@
         var eChart = echarts.init(dom);
         </#if>
 
-function parseNumberFromString(item) {
-    var value = (typeof item === 'string') ? item : item.value; // Handle both strings and objects
-    if (typeof value !== 'string') {
-        console.log('Non-string value detected, converting to string:', value);
-        value = value.toString();
-    }
-    value = value.replace(/[^\d.,-]+/g, '').trim();
 
-    var lastCommaIndex = value.lastIndexOf(',');
-    var lastPeriodIndex = value.lastIndexOf('.');
-
-    if (lastCommaIndex > lastPeriodIndex) {
-        value = value.replace(/\./g, '').replace(/,/g, '.');
-    } else {
-        value = value.replace(/,/g, '');
-    }
-    var parsedValue = parseFloat(value);
-    if (isNaN(parsedValue)) {
-        console.error('Failed to parse number from value:', value);
-        return NaN;
-    }
-    return parsedValue;
-}
-
-
-
-
-        // specify chart configuration item and data
         var option = {
           <#if element.properties.title! != "">
             title: {
@@ -124,26 +97,21 @@ function parseNumberFromString(item) {
                 ${element.properties.optionCustomization!},
             </#if>
             series: ${element.properties.seriesData!}.map(function (seriesItem) {
-                var parsedData = seriesItem.data.map(parseNumberFromString);
-
-                return Object.assign({}, seriesItem, {
-                    data: parsedData,
-                    label: {
-                        <#if element.properties.enableDataLabels! == "true">
-                            show: true,
-                        <#else>
-                            show: false,
-                        </#if>
+    return Object.assign({}, seriesItem, {
+    
+        label: {
+            <#if element.properties.enableDataLabels! == "true">
+                show: true,
+            <#else>
+                show: false,
+            </#if>
                         position: 'inside',
                         formatter: function (params) {
-
-                            // Convert the value to a number
                             var currencyValue = parseFloat(params.value);
                             var userCurrencyPrefix = "${element.properties.prefix!}";
                             var userCurrencyPostfix = "${element.properties.postfix!}";
                             var formattedValue;
         
-                            // if us formatting, prefix is not empty and disableDecimal checkbox conditions
                             <#if element.properties.useThousandSeparator! == "true">
                                 <#if element.properties.style! == 'us' && (element.properties.prefix! != '' || element.properties.postfix! != '')>
                                     <#if element.properties.disableDecimal! != "true">

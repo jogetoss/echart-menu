@@ -51,7 +51,7 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getVersion() {
-        return "7.0.6";
+        return "8.0.1";
     }
 
     @Override
@@ -136,17 +136,16 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
         datalistContent = getDatalistHTML();
         datalistContent = datalistContent.substring(0, datalistContent.length() - 8);
 
-         DataList datalist = getDataList();
+        DataList datalist = getDataList();
         if (datalist != null && datalist.getRows().size() > 0) {
             getBinderData(datalist);
         } else {
             LogUtil.info(getClass().getName(), "Datalist Content: " + datalistContent);
-            return "<div>No data available</div>"; 
+            return "<div>No data available</div>";
         }
         if (datalist != null) {
             getBinderData(datalist);
         }
-
         String libraryVersion = "";
 
         if (getPropertyString("libraryVersion") != null && !getPropertyString("libraryVersion").isEmpty()) {
@@ -264,13 +263,16 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                     for (Object r : binderdata) {
                         JSONObject dataPoint = new JSONObject();
                         String mappingValue = getPropertyString("mapping_value");
-                        //String seriesName = getColumnLabel(mappingValue, columns);
                         String name = getBinderFormattedValue(datalist, r, getPropertyString("mapping_x"));
 
                         legend.put(name);
 
+                        String rawValue = getBinderFormattedValue(datalist, r, mappingValue);
+                        String cleanedValue = parseNumericString(rawValue);
+
                         dataPoint.put("name", name);
-                        dataPoint.put("value", getBinderFormattedValue(datalist, r, mappingValue));
+                        dataPoint.put("value", cleanedValue);
+                        dataPoint.put("formattedvalue", rawValue); // Include original formatted value
                         seriesData.put(dataPoint);
                     }
 
@@ -424,15 +426,16 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
                         JSONArray seriesData = new JSONArray();
                         for (Object r : binderdata) {
                             String y = getBinderFormattedValue(datalist, r, mapping.get("value").toString());
+                            String cleanedY = parseNumericString(y);
 
                             if (getPropertyString("chartType").equalsIgnoreCase("donut")) {
                                 String x = getBinderFormattedValue(datalist, r, getPropertyString("mapping_x"));
                                 JSONObject dataPoint = new JSONObject();
                                 dataPoint.put("name", x);
-                                dataPoint.put("value", y);
+                                dataPoint.put("value", cleanedY);
                                 seriesData.put(dataPoint);
                             } else {
-                                seriesData.put(y);
+                                seriesData.put(cleanedY);
                             }
                         }
 
@@ -584,4 +587,76 @@ public class EChartMenu extends UserviewMenu implements PluginWebSupport {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
+
+    protected String parseNumericString(Object item) {
+        String value;
+
+        if (item instanceof Map && ((Map<?, ?>) item).get("value") != null) {
+            value = ((Map<?, ?>) item).get("value").toString();
+        } else if (item != null) {
+            value = item.toString();
+        } else {
+            LogUtil.error(getClassName(), new Exception("Unable to parse value: null"), "Unable to parse value: null");
+            return "0";
+        }
+
+        value = value.replace("\u00A0", "").trim();
+
+        value = value.replaceAll("[^\\d.,-]", "");
+
+        // Edge case: If the string is empty after cleaning, return "0"
+        if (value.isEmpty()) {
+            LogUtil.error(getClassName(), new Exception("Empty string after cleaning"), "Empty string after cleaning");
+            return "0";
+        }
+
+        int lastComma = value.lastIndexOf(',');
+        int lastDot = value.lastIndexOf('.');
+
+        // Initialize a variable to hold the standardized number string
+        String standardizedNumber;
+
+        if (lastComma > lastDot) {
+            // Comma appears after the last period: (EU format)
+            // Remove all periods (thousand separators) and replace the last comma with a period (decimal separator)
+            standardizedNumber = value.replace(".", ""); // Remove thousand separators
+
+            int lastCommaIndex = standardizedNumber.lastIndexOf(',');
+            if (lastCommaIndex != -1) {
+                standardizedNumber = standardizedNumber.substring(0, lastCommaIndex) + "." + standardizedNumber.substring(lastCommaIndex + 1);
+            }
+        } else if (lastDot > lastComma) {
+            // Period appears after the last comma: likely US format
+            // Remove all commas (thousand separators)
+            standardizedNumber = value.replace(",", ""); // Remove thousand separators
+        } else {
+            // Only one type of separator or none
+            if (value.contains(",")) {
+                // Assume comma is the decimal separator
+                standardizedNumber = value.replace(",", ".");
+            } else {
+                // Assume period is the decimal separator or no decimal separator
+                standardizedNumber = value;
+            }
+        }
+
+        standardizedNumber = standardizedNumber.replaceAll("[^\\d.-]", "");
+
+        int finalDotIndex = standardizedNumber.lastIndexOf('.');
+        if (finalDotIndex != -1) {
+            // Remove all other dots except the last one
+            String integerPart = standardizedNumber.substring(0, finalDotIndex).replace(".", "");
+            String fractionalPart = standardizedNumber.substring(finalDotIndex); // Includes the dot
+            standardizedNumber = integerPart + fractionalPart;
+        }
+
+        try {
+            double parsedNumber = Double.parseDouble(standardizedNumber);
+            return String.valueOf(parsedNumber);
+        } catch (NumberFormatException e) {
+            LogUtil.error(getClassName(), e, "Unable to parse numeric value: " + standardizedNumber);
+            return "0"; // Return "0" or consider throwing an exception based on your requirements
+        }
+    }
+
 }
