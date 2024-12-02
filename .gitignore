@@ -147,6 +147,7 @@ csx
 AppPackages/
 
 # Others
+sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
@@ -156,7 +157,6 @@ ClientBin/
 *.[Pp]ublish.xml
 *.pfx
 *.publishsettings
-.DS_Store
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -213,3 +213,9 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+#################
+## Joget
+#################
+
+wflow-consoleweb/src/main/webapp/wro/
